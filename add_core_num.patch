@@ -1,0 +1,24 @@
+--- xthi.c.orig	2021-03-19 18:06:17.000000000 +0000
++++ xthi.c	2021-03-19 17:45:09.000000000 +0000
+@@ -39,7 +39,7 @@
+ 
+ int main(int argc, char *argv[])
+ {
+-  int rank, thread;
++  int rank, thread, corenum;
+   cpu_set_t coremask;
+   char clbuf[7 * CPU_SETSIZE], hnbuf[64];
+ 
+@@ -53,9 +53,10 @@
+     thread = omp_get_thread_num();
+     (void)sched_getaffinity(0, sizeof(coremask), &coremask);
+     cpuset_to_cstr(&coremask, clbuf);
++    corenum = sched_getcpu();
+     #pragma omp barrier
+-    printf("Hello from rank %d, thread %d, on %s. (core affinity = %s)\n",
+-            rank, thread, hnbuf, clbuf);
++    printf("Hello from rank %d, thread %d, on host %s, core %d . (core affinity = %s)\n",
++            rank, thread, hnbuf, corenum, clbuf);
+   }
+   MPI_Finalize();
+   return(0);
